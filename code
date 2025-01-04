@@ -1,0 +1,52 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <time.h> 
+ 
+ 
+double profile_function(void (*func)(int*, int), int *arr, int size) {     clock_t start_time = clock();       func(arr, size);                clock_t end_time = clock();     return ((double)(end_time - start_time))  } 
+ 
+void inefficient_loop(int *arr, int size) { 
+    for (int i = 0; i < size; i++) {         arr[i] = arr[i] * 2;   
+    } 
+} 
+ 
+void optimized_loop(int *arr, int size) {     int i; 
+    for (i = 0; i < size - 4; i += 4) { 
+        arr[i] = arr[i] * 2;         arr[i+1] = arr[i+1] * 2;         arr[i+2] = arr[i+2] * 2;         arr[i+3] = arr[i+3] * 2; 
+    } 
+    for (; i < size; i++) {         arr[i] = arr[i] * 2; 
+    } 
+} 
+ 
+void memory_optimized_loop(int *arr, int size) { 
+    int chunk_size = 256;     for (int i = 0; i < size; i += chunk_size) {         for (int j = i; j < i + chunk_size && j < size; j++) {             arr[j] = arr[j] * 2;   
+        } 
+    } 
+} 
+ 
+void analyze_performance(int *arr, int size) {     printf("Profiling Inefficient Loop:\n");     double time_taken = profile_function(inefficient_loop, arr, size);     printf("Execution Time (Inefficient): %.6f seconds\n", time_taken); 
+ 
+    printf("\nProfiling Optimized Loop (Loop Unrolling):\n");     time_taken = profile_function(optimized_loop, arr, size);     printf("Execution Time (Optimized): %.6f seconds\n", time_taken); 
+ 
+    printf("\nProfiling Memory Optimized Loop:\n"); 
+    time_taken = profile_function(memory_optimized_loop, arr, size);     printf("Execution Time (Memory Optimized): %.6f seconds\n", time_taken); 
+ 
+    if (time_taken > 0.1) { 
+        printf("\nSuggestion: Consider loop unrolling to reduce overhead.\n"); 
+    } 
+ 
+    if (time_taken > 0.1) { 
+        printf("Suggestion: Utilize memory access optimizations like processing in chunks.\n"); 
+    } 
+ 
+   } 
+ 
+int main() {     int size = 1000000;   
+    int *arr = (int*) malloc(size * sizeof(int));          for (int i = 0; i < size; i++) { 
+        arr[i] = i + 1; 
+    } 
+ 
+    
+    free(arr);       return 0; 
+} 
+ 
